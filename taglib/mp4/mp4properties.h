@@ -30,9 +30,9 @@
 #include "audioproperties.h"
 
 namespace TagLib {
+  class ByteVector;
 
   namespace MP4 {
-
     class Atoms;
     class File;
 
@@ -108,6 +108,9 @@ namespace TagLib {
 
     private:
       void read(File *file, Atoms *atoms);
+      void readAudioData(File *file, Atoms *atoms);
+      void readVideoData(File *file, Atoms *atoms);
+      void readDuration(const ByteVector& block);
 
       class PropertiesPrivate;
       PropertiesPrivate *d;

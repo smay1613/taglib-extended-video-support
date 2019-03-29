@@ -129,6 +129,15 @@ MP4::Properties::codec() const
 void
 MP4::Properties::read(File *file, Atoms *atoms)
 {
+  readAudioData(file, atoms);
+  if (d->length == 0) {
+     readVideoData(file, atoms);
+  }
+}
+
+void
+MP4::Properties::readAudioData(File *file, Atoms *atoms)
+{
   MP4::Atom *moov = atoms->find("moov");
   if(!moov) {
     debug("MP4: Atom 'moov' not found");
@@ -167,27 +176,7 @@ MP4::Properties::read(File *file, Atoms *atoms)
   file->seek(mdhd->offset);
   data = file->readBlock(mdhd->length);
 
-  const unsigned int version = data[8];
-  long long unit;
-  long long length;
-  if(version == 1) {
-    if(data.size() < 36 + 8) {
-      debug("MP4: Atom 'trak.mdia.mdhd' is smaller than expected");
-      return;
-    }
-    unit   = data.toUInt(28U);
-    length = data.toLongLong(32U);
-  }
-  else {
-    if(data.size() < 24 + 8) {
-      debug("MP4: Atom 'trak.mdia.mdhd' is smaller than expected");
-      return;
-    }
-    unit   = data.toUInt(20U);
-    length = data.toUInt(24U);
-  }
-  if(unit > 0 && length > 0)
-    d->length = static_cast<int>(length * 1000.0 / unit + 0.5);
+  readDuration(data);
 
   MP4::Atom *atom = trak->find("mdia", "minf", "stbl", "stsd");
   if(!atom) {
@@ -231,4 +220,54 @@ MP4::Properties::read(File *file, Atoms *atoms)
   if(drms) {
     d->encrypted = true;
   }
+}
+
+void MP4::Properties::readVideoData(MP4::File *file, MP4::Atoms *atoms)
+{
+  MP4::Atom *moov = atoms->find("moov");
+  if(!moov) {
+    debug("MP4: Atom 'moov' not found");
+    return;
+  }
+
+  MP4::Atom *mvhd = moov->find("mvhd");
+  if (!mvhd) {
+    debug("MP4: Atom 'mvhd' not found");
+    return;
+  }
+
+  file->seek(mvhd->offset);
+
+  ByteVector data;
+  data = file->readBlock(mvhd->length);
+  readDuration(data);
+}
+
+void MP4::Properties::readDuration(const ByteVector &block)
+{
+  if (block.size() < 8) {
+      debug("Unexpected block size during duration reading");
+      return;
+  }
+
+  const unsigned int version = block[8];
+  long long unit;
+  long long length;
+  if(version == 1) {
+      if(block.size() < 36 + 8) {
+          debug("MP4: Atom 'trak.mdia.mdhd' or mvhd is smaller than expected");
+          return;
+      }
+      unit   = block.toLongLong(28U);
+      length = block.toLongLong(36U);
+   } else {
+      if(block.size() < 24 + 4) {
+          debug("MP4: Atom 'trak.mdia.mdhd' or mvhd is smaller than expected");
+          return;
+      }
+      unit   = block.toUInt(20U);
+      length = block.toUInt(24U);
+  }
+  if(unit > 0 && length > 0)
+    d->length = static_cast<int>(length * 1000.0 / unit + 0.5);
 }

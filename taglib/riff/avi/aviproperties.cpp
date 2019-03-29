@@ -134,9 +134,9 @@ void RIFF::AVI::Properties::readAVIHeader(File *file, const ByteVector &data, un
        * Here we fix this status by reading HASINDEX value in AVI header flags.
        */
 
-      if ((flags & AVIF_HASINDEX) && file->m_lastError == File::ParseStatus::ERROR_INVALID_CHUNK_NAME) {
+      if ((flags & AVIF_HASINDEX) && file->lastError == File::ParseStatus::ERROR_INVALID_CHUNK_NAME) {
         file->setValid(true);
-        file->m_lastError = File::ParseStatus::NO_ERROR;
+        file->lastError = File::ParseStatus::NO_ERROR;
       }
 
       const unsigned int microSecondsBlockOffset = dataOffset;
