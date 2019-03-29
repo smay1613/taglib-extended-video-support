@@ -26,6 +26,7 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/xm
   ${CMAKE_CURRENT_SOURCE_DIR}/dsf
   ${CMAKE_CURRENT_SOURCE_DIR}/dsdiff
+  ${CMAKE_CURRENT_SOURCE_DIR}/matroska
   ${CMAKE_SOURCE_DIR}/3rdparty
 )
 
@@ -119,6 +120,8 @@ set(tag_HDRS
   riff/wav/wavfile.h
   riff/wav/wavproperties.h
   riff/wav/infotag.h
+  riff/avi/avifile.h
+  riff/avi/aviproperties.h
   asf/asffile.h
   asf/asfproperties.h
   asf/asftag.h
@@ -145,6 +148,13 @@ set(tag_HDRS
   dsdiff/dsdifffile.h
   dsdiff/dsdiffproperties.h
   dsdiff/dsdiffdiintag.h
+  matroska/matroskafile.h
+  matroska/matroskaproperties.h
+  matroska/ebmlreader.h
+  matroska/matroskatypes.h
+  matroska/ebmlelement.h
+  matroska/matroskatag.h
+  matroska/simpletag.h
 )
 
 set(mpeg_SRCS
@@ -152,6 +162,11 @@ set(mpeg_SRCS
   mpeg/mpegproperties.cpp
   mpeg/mpegheader.cpp
   mpeg/xingheader.cpp
+)
+
+set(avi_SRCS
+  riff/avi/avifile.cpp
+  riff/avi/aviproperties.cpp
 )
 
 set(id3v1_SRCS
@@ -285,6 +300,15 @@ set(mod_SRCS
   mod/modproperties.cpp
 )
 
+set(matroska_SRCS
+  matroska/matroskafile.cpp
+  matroska/matroskaproperties.cpp
+  matroska/ebmlreader.cpp
+  matroska/ebmlelement.cpp
+  matroska/matroskatag.cpp
+  matroska/simpletag.cpp
+)
+
 set(s3m_SRCS
   s3m/s3mfile.cpp
   s3m/s3mproperties.cpp
@@ -339,9 +363,9 @@ if(HAVE_ZLIB_SOURCE)
 endif()
 
 set(tag_LIB_SRCS
-  ${mpeg_SRCS} ${id3v1_SRCS} ${id3v2_SRCS} ${frames_SRCS} ${ogg_SRCS}
+  ${mpeg_SRCS} ${id3v1_SRCS} ${id3v2_SRCS} ${frames_SRCS} ${ogg_SRCS} ${matroska_SRCS}
   ${vorbis_SRCS} ${oggflacs_SRCS} ${mpc_SRCS} ${ape_SRCS} ${toolkit_SRCS} ${flacs_SRCS}
-  ${wavpack_SRCS} ${speex_SRCS} ${trueaudio_SRCS} ${riff_SRCS} ${aiff_SRCS} ${wav_SRCS}
+  ${wavpack_SRCS} ${speex_SRCS} ${trueaudio_SRCS} ${riff_SRCS} ${aiff_SRCS} ${wav_SRCS} ${avi_SRCS}
   ${asf_SRCS} ${mp4_SRCS} ${mod_SRCS} ${s3m_SRCS} ${it_SRCS} ${xm_SRCS} ${opus_SRCS} ${dsf_SRCS} ${dsdiff_SRCS}
   ${zlib_SRCS}
   tag.cpp
