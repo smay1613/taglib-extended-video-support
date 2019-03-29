@@ -56,6 +56,7 @@
 #include "dsdifffile.h"
 #include "avi/avifile.h"
 #include "matroska/matroskafile.h"
+#include "mpeg_video/mpegvideofile.h"
 
 using namespace TagLib;
 
@@ -148,6 +149,8 @@ namespace
       return new RIFF::AVI::File(stream, readAudioProperties, audioPropertiesStyle);
     if (ext == "MKV")
       return new Matroska::File(stream, readAudioProperties, audioPropertiesStyle);
+    if (ext == "MPG" || ext == "MPEG")
+      return new MPEG_VIDEO::File(stream, readAudioProperties, audioPropertiesStyle);
 
     return 0;
   }
