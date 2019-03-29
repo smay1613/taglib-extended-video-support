@@ -54,6 +54,8 @@
 #include "xmfile.h"
 #include "dsffile.h"
 #include "dsdifffile.h"
+#include "avi/avifile.h"
+#include "matroska/matroskafile.h"
 
 using namespace TagLib;
 
@@ -120,7 +122,7 @@ namespace
       return new TrueAudio::File(stream, readAudioProperties, audioPropertiesStyle);
     if(ext == "M4A" || ext == "M4R" || ext == "M4B" || ext == "M4P" || ext == "MP4" || ext == "3G2" || ext == "M4V")
       return new MP4::File(stream, readAudioProperties, audioPropertiesStyle);
-    if(ext == "WMA" || ext == "ASF")
+    if(ext == "WMA" || ext == "ASF" || ext == "WMV")
       return new ASF::File(stream, readAudioProperties, audioPropertiesStyle);
     if(ext == "AIF" || ext == "AIFF" || ext == "AFC" || ext == "AIFC")
       return new RIFF::AIFF::File(stream, readAudioProperties, audioPropertiesStyle);
@@ -141,6 +143,11 @@ namespace
       return new DSDIFF::File(stream, readAudioProperties, audioPropertiesStyle);
     if(ext == "DSF")
       return new DSF::File(stream, readAudioProperties, audioPropertiesStyle);
+
+    if (ext == "AVI")
+      return new RIFF::AVI::File(stream, readAudioProperties, audioPropertiesStyle);
+    if (ext == "MKV")
+      return new Matroska::File(stream, readAudioProperties, audioPropertiesStyle);
 
     return 0;
   }
