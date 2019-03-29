@@ -74,6 +74,7 @@ RIFF::File::~File()
 
 RIFF::File::File(FileName file, Endianness endianness) :
   TagLib::File(file),
+  lastError (ParseStatus::NO_ERROR),
   d(new FilePrivate(endianness))
 {
   if(isOpen())
@@ -301,12 +302,14 @@ void RIFF::File::read()
     const unsigned int chunkSize = readBlock(4).toUInt(bigEndian);
 
     if(!isValidChunkName(chunkName)) {
+      lastError = ParseStatus::ERROR_INVALID_CHUNK_NAME;
       debug("RIFF::File::read() -- Chunk '" + chunkName + "' has invalid ID");
       setValid(false);
       break;
     }
 
     if(static_cast<long long>(offset) + 8 + chunkSize > length()) {
+      lastError = ParseStatus::ERROR_INVALID_CHUNK_SIZE;
       debug("RIFF::File::read() -- Chunk '" + chunkName + "' has invalid size (larger than the file size)");
       setValid(false);
       break;

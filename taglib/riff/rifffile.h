@@ -139,6 +139,13 @@ namespace TagLib {
        */
       void removeChunk(const ByteVector &name);
 
+      enum ParseStatus {
+        NO_ERROR,
+        ERROR_INVALID_CHUNK_NAME,
+        ERROR_INVALID_CHUNK_SIZE
+      };
+
+      ParseStatus lastError;
     private:
       File(const File &);
       File &operator=(const File &);
