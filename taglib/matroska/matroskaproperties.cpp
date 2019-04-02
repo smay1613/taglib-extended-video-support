@@ -89,14 +89,14 @@ void Matroska::Properties::read(const Matroska::EBMLReader &data)
       MatroskaID matroskaId = child.id();
 
       switch (matroskaId) {
-        case MatroskaID::Duration: {
+        case Duration: {
             d->duration = child.readDouble();
             if (d->timeScale > 0) {
                 d->length = d->duration * (d->timeScale / 1000000);
               }
             break;
           }
-        case MatroskaID::TimeCodeScale: {
+        case TimeCodeScale: {
             d->timeScale = child.readUInt();
             if (d->duration > 0) {
                 d->length = d->duration * (d->timeScale / 1000000);

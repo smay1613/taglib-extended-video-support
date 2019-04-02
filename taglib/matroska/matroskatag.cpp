@@ -10,8 +10,8 @@ struct Matroska::Tag::TagPrivate {
   TagPrivate(std::vector<Tag*>* tags) : m_tags(tags) {}
   std::vector<Tag*>* m_tags;
   std::vector<UIDElement> m_elements;
-  std::map<String, std::vector<SimpleTag>> m_simpleTags;
-  TargetType m_targetType {TargetType::DEFAULT};
+  std::map<String, std::vector<SimpleTag> > m_simpleTags;
+  TargetType m_targetType = DEFAULT;
 
   String album;
   String title;
@@ -27,7 +27,8 @@ Matroska::Tag::Tag(std::vector<Tag*>& tags, TargetType targetTypeValue, UIDEleme
       d->m_targetType = targetTypeValue;
     }
   if (id != UIDElement()) {
-      d->m_elements = {id};
+      d->m_elements.clear();
+      d->m_elements.push_back(id);
     }
 }
 
@@ -41,13 +42,13 @@ Matroska::TargetType Matroska::Tag::makeTargetType(unsigned int targetTypeValue)
   TargetType ret = static_cast<TargetType>(0);
 
   switch (targetTypeValue) {
-    case 70: ret = TargetType::COLLECTION; break;
-    case 60: ret = TargetType::SEASON; break;
-    case 50: ret = TargetType::MOVIE; break;
-    case 40: ret = TargetType::PART; break;
-    case 30: ret = TargetType::CHAPTER; break;
-    case 20: ret = TargetType::SCENE; break;
-    case 10: ret = TargetType::SHOT; break;
+    case 70: ret = COLLECTION; break;
+    case 60: ret = SEASON; break;
+    case 50: ret = MOVIE; break;
+    case 40: ret = PART; break;
+    case 30: ret = CHAPTER; break;
+    case 20: ret = SCENE; break;
+    case 10: ret = SHOT; break;
     default:
       debug("Invalid target type");
     }
@@ -166,7 +167,7 @@ String Matroska::Tag::getString(const String &key, const String &subkey, bool re
 
 void Matroska::Tag::readTagAlbum()
 {
-  if (d->m_targetType != TargetType::COLLECTION) {
+  if (d->m_targetType != COLLECTION) {
       return;
     }
   const String &ret = getString("TITLE");
@@ -247,7 +248,7 @@ std::vector<String> Matroska::Tag::get(const String &key, const String &subkey, 
               if (list.size() == 1) {
                   str = list[0];
                 } else {
-                  for (std::vector<SimpleTag>::const_iterator p = list.cbegin();
+                  for (std::vector<SimpleTag>::const_iterator p = list.begin();
                        p != list.end(); ++p) {
                       str += p->value();
                       if (p != list.end() - 1)

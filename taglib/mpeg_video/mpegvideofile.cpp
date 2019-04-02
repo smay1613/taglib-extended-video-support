@@ -76,7 +76,7 @@ void MPEG_VIDEO::File::read(bool readProperties)
   if (d->startTime < 0) {
     d->startTime = 0;
   }
-  d->properties = new Properties(Properties::ReadStyle::Average, d->endTime - d->startTime);
+  d->properties = new Properties(Properties::Average, d->endTime - d->startTime);
   if (isValid()) {
     d->tag = new ID3v1::Tag();
   }
@@ -85,12 +85,12 @@ void MPEG_VIDEO::File::read(bool readProperties)
 void MPEG_VIDEO::File::readStart()
 {
   long position = 0;
-  findMarker(position, Marker::VideoSyncPacket);
+  findMarker(position, VideoSyncPacket);
   if (position >= 0) {
     readVideoHeader(position);
   }
   long start = 0;
-  findMarker(start, Marker::SystemSyncPacket);
+  findMarker(start, SystemSyncPacket);
   readSystemFile(start);
 }
 
@@ -98,7 +98,7 @@ void MPEG_VIDEO::File::readEnd()
 {
   long end = length();
 
-  rfindMarker(end, Marker::SystemSyncPacket);
+  rfindMarker(end, SystemSyncPacket);
   if (end >= 0) {
     d->endTime = readTimeStamp (end + 4);
   }
@@ -143,11 +143,10 @@ MPEG_VIDEO::Marker MPEG_VIDEO::File::getMarker(long &position)
   if (identifier.size() == 4 && identifier.startsWith(MPEG_VIDEO::File::FilePrivate::markerStart)) {
     return static_cast<Marker>(identifier[3]);
   } else {
-    String message ("Invalid marker at position ");
-    message.append(std::to_string(position));
+    String message ("Invalid marker at position");
     debug (message);
   }
-  return Marker::Corrupt;
+  return Corrupt;
 }
 
 void MPEG_VIDEO::File::readSystemFile(long position)
@@ -158,20 +157,20 @@ void MPEG_VIDEO::File::readSystemFile(long position)
       Marker marker = findMarker(position);
 
       switch (static_cast<unsigned char>(marker)) {
-        case Marker::SystemSyncPacket:
+        case SystemSyncPacket:
           readSystemSyncPacket(position);
           break;
-        case Marker::SystemPacket:
-        case Marker::PaddingPacket:
+        case SystemPacket:
+        case PaddingPacket:
           seek (position + 4);
           position += readBlock (2).toUShort() + 6;
           break;
-        case Marker::VideoPacket:
-        case Marker::AudioPacket:
+        case VideoPacket:
+        case AudioPacket:
           seek (position + 4);
           position += readBlock (2).toUShort ();
           break;
-        case Marker::EndOfStream:
+        case EndOfStream:
           return;
         default:
           position += 4;
@@ -187,10 +186,10 @@ void MPEG_VIDEO::File::readSystemSyncPacket(long &position)
   char versionInfo = readBlock(1)[0];
 
   if ((versionInfo & 0xF0) == 0x20) {
-      d->version = Version::Version1;
+      d->version = Version1;
       packetSize = 12;
   } else if ((versionInfo & 0xC0) == 0x40) {
-      d->version = Version::Version2;
+      d->version = Version2;
       seek (position + 13);
       packetSize = 14 + (readBlock (1)[0] & 0x07);
   } else {
@@ -212,7 +211,7 @@ double MPEG_VIDEO::File::readTimeStamp(long position)
 
   seek(position);
 
-  if (d->version == Version::Version1) {
+  if (d->version == Version1) {
       ByteVector data = readBlock (5);
       high = (data[0] >> 3) & 0x01;
 

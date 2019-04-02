@@ -5,7 +5,7 @@
 namespace TagLib {
   namespace Matroska {
 
-    enum class EBMLID
+    enum EBMLID
     {
       EBMLHeader = 0x1A45DFA3,
 
@@ -26,7 +26,7 @@ namespace TagLib {
       EBMLVoid = 0xEC
     };
 
-    enum class MatroskaID : unsigned int
+    enum MatroskaID
     {
       Segment = 0x18538067,
 
@@ -196,11 +196,11 @@ namespace TagLib {
 
       /* IDs in the Tags master */
 
-      Tag = 0x7373,
+      TagID = 0x7373,
 
       /* in the Tag master */
 
-      SimpleTag = 0x67C8,
+      SimpleTagID = 0x67C8,
 
       Targets = 0x63C0,
 
@@ -220,7 +220,7 @@ namespace TagLib {
 
       TargetTypeValue = 0x68CA,
 
-      TargetType = 0x63CA,
+      TargetTypeID = 0x63CA,
 
       TagTrackUID = 0x63C5,
 
@@ -236,7 +236,7 @@ namespace TagLib {
 
       FileDescription = 0x467E,
 
-      FileName = 0x466E,
+      FileNameID = 0x466E,
 
       FileMimeType = 0x4660,
 
@@ -245,7 +245,7 @@ namespace TagLib {
       FileUID = 0x46AE
     };
 
-    enum class TargetType
+    enum TargetType
     {
       COLLECTION = 70,
 
@@ -292,7 +292,7 @@ namespace TagLib {
       SHOT = 10
     };
 
-    using UIDElement = std::pair<MatroskaID, unsigned long>;
+    typedef std::pair<MatroskaID, unsigned long> UIDElement;
   }
 }
 

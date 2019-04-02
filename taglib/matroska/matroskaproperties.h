@@ -43,7 +43,7 @@ namespace TagLib {
        * Create an instance of Matroska::AudioProperties with the data read from the
        * EBMLReader \a data.
        */
-      Properties(const Matroska::EBMLReader &data, ReadStyle style = ReadStyle::Average);
+      Properties(const Matroska::EBMLReader &data, ReadStyle style = Average);
 
       /*!
        * Destroys this Matroska::AudioProperties instance.

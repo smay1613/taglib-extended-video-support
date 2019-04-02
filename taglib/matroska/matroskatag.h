@@ -2,9 +2,10 @@
 #define TAGLIB_MATROSKATAG_H
 #include <vector>
 #include <map>
-#include <tstring.h>
+#include "tstring.h"
 #include "tag.h"
 #include "matroskatypes.h"
+#include "simpletag.h"
 
 namespace TagLib {
   namespace Matroska {
@@ -94,7 +95,7 @@ namespace TagLib {
 
       void setTargetType(const TargetType);
       void setElements(const std::vector<UIDElement>& elements);
-      std::map<String, std::vector<SimpleTag>>& simpleTags() const;
+      std::map<String, std::vector<SimpleTag> >& simpleTags() const;
 
       Tag* get(TargetType targetType) const;
       TargetType getTargetType() const;

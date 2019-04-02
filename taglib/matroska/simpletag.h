@@ -17,10 +17,10 @@ namespace TagLib {
       ByteVector value() const;
       void setValue(const ByteVector &value);
 
-      std::map<String, std::vector<SimpleTag>>& simpleTags();
+      std::map<String, std::vector<SimpleTag> >& simpleTags();
     private:
       ByteVector m_value;
-      std::map<String, std::vector<SimpleTag>> m_simpleTags;
+      std::map<String, std::vector<SimpleTag> > m_simpleTags;
       bool m_isBinary;
     };
   }

@@ -25,12 +25,11 @@
 
 #include <tbytevector.h>
 #include <tdebug.h>
-#include <tstring.h>
-#include <matroskafile.h>
-#include <tag.h>
+#include "tstring.h"
+#include "matroskafile.h"
+#include "tag.h"
 #include "ebmlreader.h"
 #include "matroskatypes.h"
-#include "matroskatag.h"
 #include "simpletag.h"
 
 using namespace TagLib;
@@ -132,7 +131,7 @@ void Matroska::File::read(bool readProperties, Properties::ReadStyle propertiesS
       MatroskaID matroskaId = element.id();
 
       switch (ebmlId) {
-        case EBMLID::EBMLHeader:
+        case EBMLHeader:
           readHeader (element);
           break;
         default:
@@ -140,7 +139,7 @@ void Matroska::File::read(bool readProperties, Properties::ReadStyle propertiesS
         }
 
       switch (matroskaId) {
-        case MatroskaID::Segment:
+        case Segment:
           readSegment(element, propertiesStyle);
           hasSegment = true;
           break;
@@ -187,7 +186,7 @@ void Matroska::File::readHeader(const EBMLReader &header)
       EBMLID ebml_id = static_cast<EBMLID>(child.id());
 
       switch (ebml_id) {
-        case EBMLID::EBMLDocType:
+        case EBMLDocType:
           docType = child.readString ();
           break;
         default:
@@ -219,16 +218,16 @@ void Matroska::File::readSegment(const Matroska::EBMLReader &element, Properties
       MatroskaID matroskaId = child->id();
 
       switch (matroskaId) {
-        case MatroskaID::SeekHead:
+        case SeekHead:
           isValid = child->read();
           break;
 
-        case MatroskaID::SegmentInfo:
+        case SegmentInfo:
           if ((isValid = child->read())) {
               readSegmentInfo(*child);
             }
           break;
-        case MatroskaID::Tags:
+        case Tags:
           isValid = child->read();
           if (isValid) {
               readTags(*child);
@@ -236,7 +235,7 @@ void Matroska::File::readSegment(const Matroska::EBMLReader &element, Properties
             }
           break;
 
-        case MatroskaID::CRC32: // We don't support it
+        case CRC32: // We don't support it
           isValid = child->read();
           break;
 
@@ -285,10 +284,11 @@ std::vector<Matroska::EBMLReader> Matroska::File::readSegments(const EBMLReader 
       bool refInSeekHead = false;
 
       switch (matroskaId) {
-        case MatroskaID::SeekHead:
+        case SeekHead:
           if (allowSeekHead) {
               // Take only the first SeekHead into account
-              std::vector<EBMLReader> ebmlSeekList = {child};
+              std::vector<EBMLReader> ebmlSeekList;
+              ebmlSeekList.push_back(child);
               if (readSeekHead (child, ebmlSeekList)) {
                   // Always reference the first element
                   if (ebmlSeekList[0].getOffset() > element.getDataOffset())
@@ -306,17 +306,17 @@ std::vector<Matroska::EBMLReader> Matroska::File::readSegments(const EBMLReader 
             }
           break;
 
-        case MatroskaID::Cluster: // reference first Cluster only (too many)
+        case Cluster: // reference first Cluster only (too many)
           refInSeekHead = !foundCluster;
           foundCluster = true;
           break;
 
           // Reference the following elements
-        case MatroskaID::Cues:
-        case MatroskaID::Tracks:
-        case MatroskaID::SegmentInfo:
-        case MatroskaID::Tags:
-        case MatroskaID::Attachments:
+        case Cues:
+        case Tracks:
+        case SegmentInfo:
+        case Tags:
+        case Attachments:
         default:
           refInSeekHead = true;
           break;
@@ -349,13 +349,13 @@ bool Matroska::File::readSeekHead(const Matroska::EBMLReader &element, std::vect
       EBMLReader ebmlSeek (element, element.getDataOffset() + i);
       MatroskaID matroskaId = ebmlSeek.id();
 
-      if (matroskaId == MatroskaID::CRC32) // Skip the CRC-32 element
+      if (matroskaId == CRC32) // Skip the CRC-32 element
         {
           i += ebmlSeek.size();
           continue;
         }
 
-      if (matroskaId != MatroskaID::Seek) {
+      if (matroskaId != Seek) {
           return false; // corrupted SeekHead
         }
 
@@ -365,10 +365,10 @@ bool Matroska::File::readSeekHead(const Matroska::EBMLReader &element, std::vect
           matroskaId = child.id();
 
           switch (matroskaId) {
-            case MatroskaID::SeekID:
+            case SeekID:
               ebmlId = static_cast<MatroskaID>(child.readUInt());
               break;
-            case MatroskaID::SeekPosition:
+            case SeekPosition:
               ebmlPosition = child.readUInt() + element.getOffset();
               break;
             default:
@@ -392,7 +392,7 @@ bool Matroska::File::readSeekHead(const Matroska::EBMLReader &element, std::vect
           segmentationList.insert (segmentationList.begin() + k + 1, ebml);
 
           // Chained SeekHead recursive read
-          if (ebmlId == MatroskaID::SeekHead) {
+          if (ebmlId == SeekHead) {
               if (!ebml.isValid()) {
                   return false; // Corrupted
                 }
@@ -416,7 +416,7 @@ void Matroska::File::readTags(const Matroska::EBMLReader &element) const
       MatroskaID matroskaId = child.id();
 
       switch (matroskaId) {
-        case MatroskaID::Tag:
+        case TagID:
           readTag (child);
           break;
         default:
@@ -439,10 +439,10 @@ void Matroska::File::readTag(const Matroska::EBMLReader &element) const
 
       MatroskaID matroskaId = child.id();
       switch (matroskaId) {
-        case MatroskaID::Targets:
+        case Targets:
           readTargets (child, *tag);
           break;
-        case MatroskaID::SimpleTag:
+        case SimpleTagID:
           readSimpleTag (child, tag);
           break;
         default:
@@ -470,16 +470,16 @@ void Matroska::File::readTargets(const Matroska::EBMLReader &element, Matroska::
       MatroskaID matroskaId = child.id();
 
       switch (matroskaId) {
-        case MatroskaID::TargetTypeValue:
+        case TargetTypeValue:
           targetTypeValue = static_cast<unsigned int>(child.readUInt());
           break;
-        case MatroskaID::TargetType:
+        case TargetTypeID:
           targetType = child.readString();
           break;
-        case MatroskaID::TagTrackUID:
-        case MatroskaID::TagEditionUID:
-        case MatroskaID::TagChapterUID:
-        case MatroskaID::TagAttachmentUID: {
+        case TagTrackUID:
+        case TagEditionUID:
+        case TagChapterUID:
+        case TagAttachmentUID: {
             ulong uid = child.readUInt();
             // Value 0 => apply to all
             if (uid != 0) {
@@ -515,18 +515,18 @@ void Matroska::File::readSimpleTag(const Matroska::EBMLReader &element, Matroska
       MatroskaID matroskaId = child.id();
 
       switch (matroskaId) {
-        case MatroskaID::TagName:
+        case TagName:
           key = child.readString();
           break;
-        case MatroskaID::TagString:
+        case TagString:
           stag.setBinary(false);
           stag.setValue(child.readBytes ());;
           break;
-        case MatroskaID::TagBinary:
+        case TagBinary:
           stag.setBinary(true);
           stag.setValue(child.readBytes ());
           break;
-        case MatroskaID::SimpleTag:
+        case SimpleTagID:
           readSimpleTag(child, NULL, &stag);
           break;
         default:
@@ -555,14 +555,14 @@ void Matroska::File::makeUnifiedTag()
           continue;
         }
       switch ((*i)->getTargetType()) {
-        case TargetType::COLLECTION: {
+        case COLLECTION: {
             d->unifiedTag->setAlbum((*i)->album());
             if (d->unifiedTag->genre().isEmpty()) {
                 d->unifiedTag->setGenre((*i)->genre());
               }
             break;
           }
-        case TargetType::MOVIE: {
+        case MOVIE: {
             if (d->unifiedTag->track() == 0)
               d->unifiedTag->setTrack((*i)->track());
 

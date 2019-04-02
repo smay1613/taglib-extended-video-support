@@ -23,7 +23,7 @@ void Matroska::SimpleTag::setValue(const ByteVector &value)
   m_value = value;
 }
 
-std::map<String, std::vector<Matroska::SimpleTag>>& Matroska::SimpleTag::simpleTags()
+std::map<String, std::vector<Matroska::SimpleTag> >& Matroska::SimpleTag::simpleTags()
 {
   return m_simpleTags;
 }
