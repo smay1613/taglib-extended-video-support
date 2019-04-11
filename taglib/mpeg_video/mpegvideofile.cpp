@@ -11,16 +11,13 @@ public:
     properties (0),
     tag (0)
   {
-    markerStart.append(0);
-    markerStart.append(0);
-    markerStart.append(1);
   }
   ~FilePrivate() {
     delete properties;
     delete tag;
   }
 
-  static ByteVector markerStart;
+  const static ByteVector markerStart;
   double startTime = -1.0;
   double endTime = -1.0;
   Version version;
@@ -30,7 +27,7 @@ public:
   ID3v1::Tag* tag;
 };
 
-ByteVector MPEG_VIDEO::File::FilePrivate::markerStart;
+const ByteVector MPEG_VIDEO::File::FilePrivate::markerStart = ByteVector::fromUInt(0x00000001).mid(1, 3);
 
 TagLib::MPEG_VIDEO::File::File(TagLib::FileName file, bool readProperties, TagLib::AudioProperties::ReadStyle propertiesStyle)
   : TagLib::File(file),
@@ -91,7 +88,9 @@ void MPEG_VIDEO::File::readStart()
   }
   long start = 0;
   findMarker(start, SystemSyncPacket);
-  readSystemFile(start);
+  if (start >= 0) {
+    readSystemFile(start);
+  }
 }
 
 void MPEG_VIDEO::File::readEnd()
@@ -108,6 +107,7 @@ void MPEG_VIDEO::File::findMarker(long &position, MPEG_VIDEO::Marker marker)
 {
   ByteVector packet (MPEG_VIDEO::File::FilePrivate::markerStart);
   packet.append(static_cast<char>(marker));
+
   position = find(packet, position);
 
   if (position < 0) {
