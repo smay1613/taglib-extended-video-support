@@ -60,17 +60,7 @@ MP4::Atom::Atom(File *file)
   }
   else if(length == 1) {
     // The atom has a 64-bit length.
-    const long long longLength = file->readBlock(8).toLongLong();
-    if(longLength <= LONG_MAX) {
-      // The actual length fits in long. That's always the case if long is 64-bit.
-      length = static_cast<long>(longLength);
-    }
-    else {
-      debug("MP4: 64-bit atoms are not supported");
-      length = 0;
-      file->seek(0, File::End);
-      return;
-    }
+    length = file->readBlock(8).toLongLong();
   }
 
   if(length < 8) {
@@ -156,7 +146,7 @@ MP4::Atoms::Atoms(File *file)
   atoms.setAutoDelete(true);
 
   file->seek(0, File::End);
-  long end = file->tell();
+  long long end = file->tell();
   file->seek(0);
   while(file->tell() + 8 <= end) {
     MP4::Atom *atom = new MP4::Atom(file);
