@@ -138,7 +138,7 @@ namespace TagLib {
      *
      * \see Position
      */
-    virtual void seek(long offset, Position p = Beginning) = 0;
+    virtual void seek(long long offset, Position p = Beginning) = 0;
 
     /*!
      * Reset the end-of-stream and error flags on the stream.
@@ -148,12 +148,12 @@ namespace TagLib {
     /*!
      * Returns the current offset within the stream.
      */
-    virtual long tell() const = 0;
+    virtual long long tell() const = 0;
 
     /*!
      * Returns the length of the stream.
      */
-    virtual long length() = 0;
+    virtual long long length() = 0;
 
     /*!
      * Truncates the stream to a \a length.

@@ -120,7 +120,7 @@ namespace TagLib {
      *
      * \see Position
      */
-    void seek(long offset, Position p = Beginning);
+    void seek(long long offset, Position p = Beginning);
 
     /*!
      * Reset the end-of-file and error flags on the file.
@@ -130,12 +130,12 @@ namespace TagLib {
     /*!
      * Returns the current offset within the file.
      */
-    long tell() const;
+    long long tell() const;
 
     /*!
      * Returns the length of the file.
      */
-    long length();
+    long long length();
 
     /*!
      * Truncates the file to a \a length.
