@@ -62,19 +62,19 @@ public:
     }
     {
       PlainFile file(name.c_str());
-      CPPUNIT_ASSERT_EQUAL(10l, file.length());
+      CPPUNIT_ASSERT_EQUAL(10ll, file.length());
 
-      CPPUNIT_ASSERT_EQUAL(2l, file.find(ByteVector("23", 2)));
-      CPPUNIT_ASSERT_EQUAL(2l, file.find(ByteVector("23", 2), 2));
-      CPPUNIT_ASSERT_EQUAL(7l, file.find(ByteVector("23", 2), 3));
+      CPPUNIT_ASSERT_EQUAL(2ll, file.find(ByteVector("23", 2)));
+      CPPUNIT_ASSERT_EQUAL(2ll, file.find(ByteVector("23", 2), 2));
+      CPPUNIT_ASSERT_EQUAL(7ll, file.find(ByteVector("23", 2), 3));
 
       file.seek(0);
       const ByteVector v = file.readBlock(file.length());
       CPPUNIT_ASSERT_EQUAL((unsigned int)10, v.size());
 
-      CPPUNIT_ASSERT_EQUAL((long)v.find("23"),    file.find("23"));
-      CPPUNIT_ASSERT_EQUAL((long)v.find("23", 2), file.find("23", 2));
-      CPPUNIT_ASSERT_EQUAL((long)v.find("23", 3), file.find("23", 3));
+      CPPUNIT_ASSERT_EQUAL((long long)v.find("23"),    file.find("23"));
+      CPPUNIT_ASSERT_EQUAL((long long)v.find("23", 2), file.find("23", 2));
+      CPPUNIT_ASSERT_EQUAL((long long)v.find("23", 3), file.find("23", 3));
     }
   }
 
@@ -90,19 +90,19 @@ public:
     }
     {
       PlainFile file(name.c_str());
-      CPPUNIT_ASSERT_EQUAL(10l, file.length());
+      CPPUNIT_ASSERT_EQUAL(10ll, file.length());
 
-      CPPUNIT_ASSERT_EQUAL(7l, file.rfind(ByteVector("23", 2)));
-      CPPUNIT_ASSERT_EQUAL(7l, file.rfind(ByteVector("23", 2), 7));
-      CPPUNIT_ASSERT_EQUAL(2l, file.rfind(ByteVector("23", 2), 6));
+      CPPUNIT_ASSERT_EQUAL(7ll, file.rfind(ByteVector("23", 2)));
+      CPPUNIT_ASSERT_EQUAL(7ll, file.rfind(ByteVector("23", 2), 7));
+      CPPUNIT_ASSERT_EQUAL(2ll, file.rfind(ByteVector("23", 2), 6));
 
       file.seek(0);
       const ByteVector v = file.readBlock(file.length());
       CPPUNIT_ASSERT_EQUAL((unsigned int)10, v.size());
 
-      CPPUNIT_ASSERT_EQUAL((long)v.rfind("23"),    file.rfind("23"));
-      CPPUNIT_ASSERT_EQUAL((long)v.rfind("23", 7), file.rfind("23", 7));
-      CPPUNIT_ASSERT_EQUAL((long)v.rfind("23", 6), file.rfind("23", 6));
+      CPPUNIT_ASSERT_EQUAL((long long)v.rfind("23"),    file.rfind("23"));
+      CPPUNIT_ASSERT_EQUAL((long long)v.rfind("23", 7), file.rfind("23", 7));
+      CPPUNIT_ASSERT_EQUAL((long long)v.rfind("23", 6), file.rfind("23", 6));
     }
   }
 
@@ -112,22 +112,22 @@ public:
     std::string name = copy.fileName();
 
     PlainFile f(name.c_str());
-    CPPUNIT_ASSERT_EQUAL((long)0, f.tell());
-    CPPUNIT_ASSERT_EQUAL((long)4328, f.length());
+    CPPUNIT_ASSERT_EQUAL(0LL, f.tell());
+    CPPUNIT_ASSERT_EQUAL(4328LL, f.length());
 
     f.seek(100, File::Beginning);
-    CPPUNIT_ASSERT_EQUAL((long)100, f.tell());
+    CPPUNIT_ASSERT_EQUAL(100LL, f.tell());
     f.seek(100, File::Current);
-    CPPUNIT_ASSERT_EQUAL((long)200, f.tell());
+    CPPUNIT_ASSERT_EQUAL(200LL, f.tell());
     f.seek(-300, File::Current);
-    CPPUNIT_ASSERT_EQUAL((long)200, f.tell());
+    CPPUNIT_ASSERT_EQUAL(200LL, f.tell());
 
     f.seek(-100, File::End);
-    CPPUNIT_ASSERT_EQUAL((long)4228, f.tell());
+    CPPUNIT_ASSERT_EQUAL(4228LL, f.tell());
     f.seek(-100, File::Current);
-    CPPUNIT_ASSERT_EQUAL((long)4128, f.tell());
+    CPPUNIT_ASSERT_EQUAL(4128LL, f.tell());
     f.seek(300, File::Current);
-    CPPUNIT_ASSERT_EQUAL((long)4428, f.tell());
+    CPPUNIT_ASSERT_EQUAL(4428LL, f.tell());
   }
 
   void testTruncate()
@@ -137,14 +137,14 @@ public:
 
     {
       PlainFile f(name.c_str());
-      CPPUNIT_ASSERT_EQUAL(4328L, f.length());
+      CPPUNIT_ASSERT_EQUAL(4328LL, f.length());
 
       f.truncate(2000);
-      CPPUNIT_ASSERT_EQUAL(2000L, f.length());
+      CPPUNIT_ASSERT_EQUAL(2000LL, f.length());
     }
     {
       PlainFile f(name.c_str());
-      CPPUNIT_ASSERT_EQUAL(2000L, f.length());
+      CPPUNIT_ASSERT_EQUAL(2000LL, f.length());
     }
   }
 

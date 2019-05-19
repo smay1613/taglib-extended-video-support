@@ -446,8 +446,8 @@ public:
     f.tag()->setTitle("0123456789");
     f.save();
     f.save();
-    CPPUNIT_ASSERT_EQUAL(2862L, f.find("0123456789"));
-    CPPUNIT_ASSERT_EQUAL(-1L, f.find("0123456789", 2863));
+    CPPUNIT_ASSERT_EQUAL(2862LL, f.find("0123456789"));
+    CPPUNIT_ASSERT_EQUAL(-1LL, f.find("0123456789", 2863));
   }
 
   void testWithZeroLengthAtom()

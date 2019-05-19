@@ -121,8 +121,8 @@ public:
     CPPUNIT_ASSERT_EQUAL(String("Title1"), f.tag()->title());
 
     f.save();
-    CPPUNIT_ASSERT_EQUAL(7030L, f.length());
-    CPPUNIT_ASSERT_EQUAL(-1L, f.find("Title2"));
+    CPPUNIT_ASSERT_EQUAL(7030LL, f.length());
+    CPPUNIT_ASSERT_EQUAL(-1LL, f.find("Title2"));
   }
 
   void testFuzzedFile1()

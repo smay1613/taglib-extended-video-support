@@ -225,7 +225,7 @@ public:
     ScopedFileCopy copy("duplicate_tags", ".wav");
 
     RIFF::WAV::File f(copy.fileName().c_str());
-    CPPUNIT_ASSERT_EQUAL(17052L, f.length());
+    CPPUNIT_ASSERT_EQUAL(17052LL, f.length());
 
     // duplicate_tags.wav has duplicate ID3v2/INFO tags.
     // title() returns "Title2" if can't skip the second tag.
@@ -237,8 +237,8 @@ public:
     CPPUNIT_ASSERT_EQUAL(String("Title1"), f.InfoTag()->title());
 
     f.save();
-    CPPUNIT_ASSERT_EQUAL(15898L, f.length());
-    CPPUNIT_ASSERT_EQUAL(-1L, f.find("Title2"));
+    CPPUNIT_ASSERT_EQUAL(15898LL, f.length());
+    CPPUNIT_ASSERT_EQUAL(-1LL, f.find("Title2"));
   }
 
   void testFuzzedFile1()

@@ -163,9 +163,9 @@ namespace TagLib {
      * \note This has the practical limitation that \a pattern can not be longer
      * than the buffer size used by readBlock().  Currently this is 1024 bytes.
      */
-    long find(const ByteVector &pattern,
-              long fromOffset = 0,
-              const ByteVector &before = ByteVector());
+    long long find(const ByteVector &pattern,
+                   long long fromOffset = 0,
+                   const ByteVector &before = ByteVector());
 
     /*!
      * Returns the offset in the file that \a pattern occurs at or -1 if it can
@@ -179,9 +179,9 @@ namespace TagLib {
      * \note This has the practical limitation that \a pattern can not be longer
      * than the buffer size used by readBlock().  Currently this is 1024 bytes.
      */
-    long rfind(const ByteVector &pattern,
-               long fromOffset = 0,
-               const ByteVector &before = ByteVector());
+    long long rfind(const ByteVector &pattern,
+                    long long fromOffset = 0,
+                    const ByteVector &before = ByteVector());
 
     /*!
      * Insert \a data at position \a start in the file overwriting \a replace
@@ -223,7 +223,7 @@ namespace TagLib {
      *
      * \see Position
      */
-    void seek(long offset, Position p = Beginning);
+    void seek(long long offset, Position p = Beginning);
 
     /*!
      * Reset the end-of-file and error flags on the file.
@@ -233,12 +233,12 @@ namespace TagLib {
     /*!
      * Returns the current offset within the file.
      */
-    long tell() const;
+    long long tell() const;
 
     /*!
      * Returns the length of the file.
      */
-    long length();
+    long long length();
 
     /*!
      * Returns true if \a file can be opened for reading.  If the file does not

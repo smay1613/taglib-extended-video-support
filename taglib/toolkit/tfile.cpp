@@ -247,14 +247,14 @@ void File::writeBlock(const ByteVector &data)
   d->stream->writeBlock(data);
 }
 
-long File::find(const ByteVector &pattern, long fromOffset, const ByteVector &before)
+long long File::find(const ByteVector &pattern, long long fromOffset, const ByteVector &before)
 {
   if(!d->stream || pattern.size() > bufferSize())
       return -1;
 
   // The position in the file that the current buffer starts at.
 
-  long bufferOffset = fromOffset;
+  long long bufferOffset = fromOffset;
   ByteVector buffer;
 
   // These variables are used to keep track of a partial match that happens at
@@ -266,7 +266,7 @@ long File::find(const ByteVector &pattern, long fromOffset, const ByteVector &be
   // Save the location of the current read pointer.  We will restore the
   // position using seek() before all returns.
 
-  long originalPosition = tell();
+  long long originalPosition = tell();
 
   // Start the search at the offset.
 
@@ -343,7 +343,7 @@ long File::find(const ByteVector &pattern, long fromOffset, const ByteVector &be
 }
 
 
-long File::rfind(const ByteVector &pattern, long fromOffset, const ByteVector &before)
+long long File::rfind(const ByteVector &pattern, long long fromOffset, const ByteVector &before)
 {
   if(!d->stream || pattern.size() > bufferSize())
       return -1;
@@ -363,7 +363,7 @@ long File::rfind(const ByteVector &pattern, long fromOffset, const ByteVector &b
   // Save the location of the current read pointer.  We will restore the
   // position using seek() before all returns.
 
-  long originalPosition = tell();
+  long long originalPosition = tell();
 
   // Start the search at the offset.
 
@@ -371,7 +371,7 @@ long File::rfind(const ByteVector &pattern, long fromOffset, const ByteVector &b
     fromOffset = length();
 
   long bufferLength = bufferSize();
-  long bufferOffset = fromOffset + pattern.size();
+  long long bufferOffset = fromOffset + pattern.size();
 
   // See the notes in find() for an explanation of this algorithm.
 
@@ -442,7 +442,7 @@ bool File::isValid() const
   return isOpen() && d->valid;
 }
 
-void File::seek(long offset, Position p)
+void File::seek(long long offset, Position p)
 {
   d->stream->seek(offset, IOStream::Position(p));
 }
@@ -457,12 +457,12 @@ void File::clear()
   d->stream->clear();
 }
 
-long File::tell() const
+long long File::tell() const
 {
   return d->stream->tell();
 }
 
-long File::length()
+long long File::length()
 {
   return d->stream->length();
 }

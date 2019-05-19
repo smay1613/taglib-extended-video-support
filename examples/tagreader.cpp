@@ -40,6 +40,9 @@ int main(int argc, char *argv[])
 
     TagLib::FileRef f(argv[i]);
 
+    bool isNull = f.isNull();
+    auto tag = f.tag();
+
     if(!f.isNull() && f.tag()) {
 
       TagLib::Tag *tag = f.tag();

@@ -1187,14 +1187,14 @@ public:
     {
       MPEG::File f(newname.c_str());
       CPPUNIT_ASSERT(f.hasID3v2Tag());
-      CPPUNIT_ASSERT_EQUAL(74789L, f.length());
+      CPPUNIT_ASSERT_EQUAL(74789LL, f.length());
       f.ID3v2Tag()->setTitle("ABCDEFGHIJ");
       f.save(MPEG::File::ID3v2, true);
     }
     {
       MPEG::File f(newname.c_str());
       CPPUNIT_ASSERT(f.hasID3v2Tag());
-      CPPUNIT_ASSERT_EQUAL(9263L, f.length());
+      CPPUNIT_ASSERT_EQUAL(9263LL, f.length());
     }
   }
 
@@ -1252,7 +1252,7 @@ public:
     {
       MPEG::File f(copy.fileName().c_str());
       CPPUNIT_ASSERT(f.hasID3v2Tag());
-      CPPUNIT_ASSERT_EQUAL((long)3594, f.length());
+      CPPUNIT_ASSERT_EQUAL(3594LL, f.length());
       CPPUNIT_ASSERT_EQUAL((unsigned int)1505, f.ID3v2Tag()->header()->completeTagSize());
       CPPUNIT_ASSERT_EQUAL(String("Artist A"), f.ID3v2Tag()->artist());
       CPPUNIT_ASSERT_EQUAL(44100, f.audioProperties()->sampleRate());

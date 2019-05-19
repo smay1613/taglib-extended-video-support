@@ -83,7 +83,7 @@ public:
     {
       Vorbis::File f(newname.c_str());
       CPPUNIT_ASSERT(f.isValid());
-      CPPUNIT_ASSERT_EQUAL(136383L, f.length());
+      CPPUNIT_ASSERT_EQUAL(136383LL, f.length());
       CPPUNIT_ASSERT_EQUAL(19, f.lastPageHeader()->pageSequenceNumber());
       CPPUNIT_ASSERT_EQUAL(30U, f.packet(0).size());
       CPPUNIT_ASSERT_EQUAL(131127U, f.packet(1).size());
@@ -99,7 +99,7 @@ public:
     {
       Vorbis::File f(newname.c_str());
       CPPUNIT_ASSERT(f.isValid());
-      CPPUNIT_ASSERT_EQUAL(4370L, f.length());
+      CPPUNIT_ASSERT_EQUAL(4370LL, f.length());
       CPPUNIT_ASSERT_EQUAL(3, f.lastPageHeader()->pageSequenceNumber());
       CPPUNIT_ASSERT_EQUAL(30U, f.packet(0).size());
       CPPUNIT_ASSERT_EQUAL(60U, f.packet(1).size());
