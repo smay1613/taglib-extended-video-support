@@ -151,26 +151,26 @@ void Matroska::File::read(bool readProperties, Properties::ReadStyle propertiesS
     }
 }
 
-ulong Matroska::File::readLeadText()
+long long Matroska::File::readLeadText()
 {
-  ulong offset = 0;
+  long long offset = 0;
 
   // look up the 0x1A start byte
   const int buffer_size = 64;
   int index;
   do {
-      seek(static_cast<long>(offset));
+      seek(offset);
       const ByteVector& leadText = readBlock(buffer_size);
       index = leadText.find(0x1A);
       offset += buffer_size;
-    } while (index < 0 && offset < static_cast<ulong>(length()));
+  } while (index < 0 && offset < length());
 
   if (index < 0) {
       debug("Invalid Matroska file, missing data 0x1A.");
-      return -1u;
-    }
+      return -1;
+  }
 
-  offset = (offset + static_cast<ulong>(index)) - buffer_size;
+  offset = (offset + index) - buffer_size;
 
   return offset;
 }
@@ -178,7 +178,7 @@ ulong Matroska::File::readLeadText()
 void Matroska::File::readHeader(const EBMLReader &header)
 {
   String docType;
-  ulong i = 0;
+  long long i = 0;
 
   while (i < header.getDataSize()) {
       EBMLReader child (header, header.getDataOffset() + i);
@@ -271,7 +271,7 @@ std::vector<Matroska::EBMLReader> Matroska::File::readSegments(const EBMLReader 
 
   bool foundCluster = false;
 
-  ulong i = 0;
+  long long i = 0;
 
   while (i < element.getDataSize()) {
       EBMLReader child (element, element.getDataOffset() + i);
@@ -342,9 +342,9 @@ void Matroska::File::readSegmentInfo(const Matroska::EBMLReader &element)
 bool Matroska::File::readSeekHead(const Matroska::EBMLReader &element, std::vector<EBMLReader> &segmentationList)
 {
   MatroskaID ebmlId;
-  ulong ebmlPosition = 0;
+  long long ebmlPosition = 0;
 
-  ulong i = 0;
+  long long i = 0;
   while (i < element.getDataSize()) {
       EBMLReader ebmlSeek (element, element.getDataOffset() + i);
       MatroskaID matroskaId = ebmlSeek.id();
@@ -359,7 +359,7 @@ bool Matroska::File::readSeekHead(const Matroska::EBMLReader &element, std::vect
           return false; // corrupted SeekHead
         }
 
-      ulong j = 0;
+      long long j = 0;
       while (j < ebmlSeek.getDataSize()) {
           EBMLReader child (ebmlSeek, ebmlSeek.getDataOffset() + j);
           matroskaId = child.id();
@@ -408,9 +408,9 @@ bool Matroska::File::readSeekHead(const Matroska::EBMLReader &element, std::vect
 
 void Matroska::File::readTags(const Matroska::EBMLReader &element) const
 {
-  ulong i = 0;
+  long long i = 0;
 
-  while (i < static_cast<ulong>(element.getDataSize())) {
+  while (i < element.getDataSize()) {
       EBMLReader child (element, element.getDataOffset() + i);
 
       MatroskaID matroskaId = child.id();
@@ -429,12 +429,12 @@ void Matroska::File::readTags(const Matroska::EBMLReader &element) const
 
 void Matroska::File::readTag(const Matroska::EBMLReader &element) const
 {
-  ulong i = 0;
+  long long i = 0;
 
   // Create new Tag
   Tag* tag = new Tag(d->m_tags);
 
-  while (i < static_cast<ulong>(element.getDataSize())) {
+  while (i < element.getDataSize()) {
       EBMLReader child (element, element.getDataOffset() + i);
 
       MatroskaID matroskaId = child.id();
@@ -458,9 +458,9 @@ void Matroska::File::readTag(const Matroska::EBMLReader &element) const
 
 void Matroska::File::readTargets(const Matroska::EBMLReader &element, Matroska::Tag &tag) const
 {
-  ulong i = 0;
+  long long i = 0;
 
-  unsigned int targetTypeValue = 0;
+  ulong targetTypeValue = 0;
   String targetType;
   std::vector<UIDElement> uids;
 
@@ -471,7 +471,7 @@ void Matroska::File::readTargets(const Matroska::EBMLReader &element, Matroska::
 
       switch (matroskaId) {
         case TargetTypeValue:
-          targetTypeValue = static_cast<unsigned int>(child.readUInt());
+          targetTypeValue = child.readUInt();
           break;
         case TargetTypeID:
           targetType = child.readString();
@@ -505,7 +505,7 @@ void Matroska::File::readTargets(const Matroska::EBMLReader &element, Matroska::
 
 void Matroska::File::readSimpleTag(const Matroska::EBMLReader &element, Matroska::Tag *tag, Matroska::SimpleTag* simpletag) const
 {
-  ulong i = 0;
+  long long i = 0;
   String key;
   SimpleTag stag;
 
@@ -551,29 +551,30 @@ void Matroska::File::makeUnifiedTag()
   for (std::vector<Tag*>::iterator i = d->m_tags.begin();
        i != d->m_tags.end(); ++i)
     {
-      if (!(*i)) {
+      Tag* tag = *i;
+      if (!tag) {
           continue;
         }
-      switch ((*i)->getTargetType()) {
+      switch (tag->getTargetType()) {
         case COLLECTION: {
-            d->unifiedTag->setAlbum((*i)->album());
+            d->unifiedTag->setAlbum(tag->album());
             if (d->unifiedTag->genre().isEmpty()) {
-                d->unifiedTag->setGenre((*i)->genre());
+                d->unifiedTag->setGenre(tag->genre());
               }
             break;
           }
         case MOVIE: {
             if (d->unifiedTag->track() == 0)
-              d->unifiedTag->setTrack((*i)->track());
+              d->unifiedTag->setTrack(tag->track());
 
             if (d->unifiedTag->artist().isEmpty())
-              d->unifiedTag->setArtist((*i)->artist());
+              d->unifiedTag->setArtist(tag->artist());
 
             if (d->unifiedTag->title().isEmpty())
-              d->unifiedTag->setTitle((*i)->title());
+              d->unifiedTag->setTitle(tag->title());
 
             if (d->unifiedTag->genre().isEmpty())
-              d->unifiedTag->setGenre((*i)->genre());
+              d->unifiedTag->setGenre(tag->genre());
             break;
           }
         }

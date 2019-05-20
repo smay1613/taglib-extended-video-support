@@ -82,7 +82,7 @@ namespace TagLib {
       File &operator=(const File &);
 
       void read(bool readProperties, Properties::ReadStyle propertiesStyle);
-      ulong readLeadText();
+      long long readLeadText();
       void readHeader(const EBMLReader &header);
       void readSegment(const EBMLReader &element, AudioProperties::ReadStyle propertiesStyle, bool retry = true);
       std::vector<EBMLReader> readSegments(const EBMLReader& element, bool allowSeekHead);
