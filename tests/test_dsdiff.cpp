@@ -100,9 +100,9 @@ public:
       f.tag()->setTitle("NEW TITLE 2");
       f.save();
       CPPUNIT_ASSERT_EQUAL(String("NEW TITLE 2"), f.tag()->title());
-      CPPUNIT_ASSERT_EQUAL(8252L, f.length());
+      CPPUNIT_ASSERT_EQUAL(8252LL, f.length());
       f.save();
-      CPPUNIT_ASSERT_EQUAL(8252L, f.length());
+      CPPUNIT_ASSERT_EQUAL(8252LL, f.length());
     }
     {
       DSDIFF::File f(newname.c_str());

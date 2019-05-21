@@ -83,7 +83,7 @@ int Matroska::Properties::channels() const
 
 void Matroska::Properties::read(const Matroska::EBMLReader &data)
 {
-  ulong i = 0;
+  long long i = 0;
   while (i < data.getDataSize()) {
       EBMLReader child (data, data.getDataOffset() + i);
       MatroskaID matroskaId = child.id();

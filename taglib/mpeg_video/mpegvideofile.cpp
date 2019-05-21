@@ -81,12 +81,12 @@ void MPEG_VIDEO::File::read(bool readProperties)
 
 void MPEG_VIDEO::File::readStart()
 {
-  long position = 0;
+  long long position = 0;
   findMarker(position, VideoSyncPacket);
   if (position >= 0) {
     readVideoHeader(position);
   }
-  long start = 0;
+  long long start = 0;
   findMarker(start, SystemSyncPacket);
   if (start >= 0) {
     readSystemFile(start);
@@ -95,7 +95,7 @@ void MPEG_VIDEO::File::readStart()
 
 void MPEG_VIDEO::File::readEnd()
 {
-  long end = length();
+  long long end = length();
 
   rfindMarker(end, SystemSyncPacket);
   if (end >= 0) {
@@ -103,7 +103,7 @@ void MPEG_VIDEO::File::readEnd()
   }
 }
 
-void MPEG_VIDEO::File::findMarker(long &position, MPEG_VIDEO::Marker marker)
+void MPEG_VIDEO::File::findMarker(long long &position, MPEG_VIDEO::Marker marker)
 {
   ByteVector packet (MPEG_VIDEO::File::FilePrivate::markerStart);
   packet.append(static_cast<char>(marker));
@@ -115,7 +115,7 @@ void MPEG_VIDEO::File::findMarker(long &position, MPEG_VIDEO::Marker marker)
   }
 }
 
-MPEG_VIDEO::Marker MPEG_VIDEO::File::findMarker(long &position)
+MPEG_VIDEO::Marker MPEG_VIDEO::File::findMarker(long long &position)
 {
   position = find(MPEG_VIDEO::File::FilePrivate::markerStart, position);
   if (position < 0) {
@@ -124,7 +124,7 @@ MPEG_VIDEO::Marker MPEG_VIDEO::File::findMarker(long &position)
   return getMarker(position);
 }
 
-void MPEG_VIDEO::File::rfindMarker(long &position, MPEG_VIDEO::Marker marker)
+void MPEG_VIDEO::File::rfindMarker(long long &position, MPEG_VIDEO::Marker marker)
 {
   ByteVector packet (MPEG_VIDEO::File::FilePrivate::markerStart);
   packet.append(static_cast<char>(marker));
@@ -135,7 +135,7 @@ void MPEG_VIDEO::File::rfindMarker(long &position, MPEG_VIDEO::Marker marker)
   }
 }
 
-MPEG_VIDEO::Marker MPEG_VIDEO::File::getMarker(long &position)
+MPEG_VIDEO::Marker MPEG_VIDEO::File::getMarker(long long &position)
 {
   seek(position);
 
@@ -149,11 +149,11 @@ MPEG_VIDEO::Marker MPEG_VIDEO::File::getMarker(long &position)
   return Corrupt;
 }
 
-void MPEG_VIDEO::File::readSystemFile(long position)
+void MPEG_VIDEO::File::readSystemFile(long long position)
 {
   int sanityLimit = 100;
 
-  for (int i = 0; (i < sanityLimit) && (d->startTime == -1.0); i++) {
+  for (int i = 0; (i < sanityLimit) && (d->startTime < 0.0); i++) {
       Marker marker = findMarker(position);
 
       switch (static_cast<unsigned char>(marker)) {
@@ -179,7 +179,7 @@ void MPEG_VIDEO::File::readSystemFile(long position)
     }
 }
 
-void MPEG_VIDEO::File::readSystemSyncPacket(long &position)
+void MPEG_VIDEO::File::readSystemSyncPacket(long long &position)
 {
   int packetSize = 0;
   seek (position + 4);
@@ -197,14 +197,14 @@ void MPEG_VIDEO::File::readSystemSyncPacket(long &position)
       return;
   }
 
-  if (d->startTime == -1.0) {
+  if (d->startTime < 0.0) {
     d->startTime = readTimeStamp(position + 4);
   }
 
   position += packetSize;
 }
 
-double MPEG_VIDEO::File::readTimeStamp(long position)
+double MPEG_VIDEO::File::readTimeStamp(long long position)
 {
   double high;
   uint low;
@@ -236,11 +236,11 @@ double MPEG_VIDEO::File::readTimeStamp(long position)
   return (((high * 0x10000) * 0x10000) + low) / 90000.0;
 }
 
-void MPEG_VIDEO::File::readVideoHeader(long &position)
+void MPEG_VIDEO::File::readVideoHeader(long long &position)
 {
   int dataLength = readBlock(2).toUShort();
 
-  long dataOffset = position + 4;
+  long long dataOffset = position + 4;
   seek(dataOffset);
   ByteVector data = readBlock(7);
   if (data.size() < 7) {

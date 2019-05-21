@@ -330,7 +330,7 @@ public:
     f.ID3v2Tag(true)->setTitle("0123456789");
     f.save();
     f.save();
-    CPPUNIT_ASSERT_EQUAL(-1L, f.find("ID3", 3));
+    CPPUNIT_ASSERT_EQUAL(-1LL, f.find("ID3", 3));
   }
 
   void testRepeatedSave3()

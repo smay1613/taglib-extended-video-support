@@ -40,7 +40,7 @@ public:
   ByteVectorStreamPrivate(const ByteVector &data);
 
   ByteVector data;
-  long position;
+  long long position;
 };
 
 ByteVectorStream::ByteVectorStreamPrivate::ByteVectorStreamPrivate(const ByteVector &data) :
@@ -127,7 +127,7 @@ bool ByteVectorStream::isOpen() const
   return true;
 }
 
-void ByteVectorStream::seek(long offset, Position p)
+void ByteVectorStream::seek(long long offset, Position p)
 {
   switch(p) {
   case Beginning:
@@ -146,12 +146,12 @@ void ByteVectorStream::clear()
 {
 }
 
-long ByteVectorStream::tell() const
+long long ByteVectorStream::tell() const
 {
   return d->position;
 }
 
-long ByteVectorStream::length()
+long long ByteVectorStream::length()
 {
   return d->data.size();
 }

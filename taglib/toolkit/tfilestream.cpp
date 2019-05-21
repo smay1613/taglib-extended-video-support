@@ -30,8 +30,13 @@
 #ifdef _WIN32
 # include <windows.h>
 #else
-# include <stdio.h>
+# if _FILE_OFFSET_BITS != 64
+#  error "This file should be compiled with _FILE_OFFSET_BITS=64 definition"
+# endif
 # include <unistd.h>
+# include <sys/stat.h>
+# include <sys/types.h>
+# include <fcntl.h>
 #endif
 
 using namespace TagLib;
@@ -94,33 +99,43 @@ namespace
     operator FileName () const { return c_str(); }
   };
 
-  typedef FILE* FileHandle;
+  typedef int FileHandle;
 
-  const FileHandle InvalidFileHandle = 0;
+  const FileHandle InvalidFileHandle = -1;
 
   FileHandle openFile(const FileName &path, bool readOnly)
   {
-    return fopen(path, readOnly ? "rb" : "rb+");
+    return open(path, readOnly ? O_RDONLY : O_RDWR);
   }
 
   FileHandle openFile(const int fileDescriptor, bool readOnly)
   {
-    return fdopen(fileDescriptor, readOnly ? "rb" : "rb+");
+    int flags = fcntl(fileDescriptor, F_GETFL, 0);
+    
+    if (flags < 0)
+      return InvalidFileHandle;
+
+    flags &= O_ACCMODE;
+
+    if (flags == O_RDWR || (flags == O_RDONLY && readOnly))
+      return fileDescriptor;
+
+    return InvalidFileHandle;
   }
 
   void closeFile(FileHandle file)
   {
-    fclose(file);
+    close(file);
   }
 
-  size_t readFile(FileHandle file, ByteVector &buffer)
+  ssize_t readFile(FileHandle file, ByteVector &buffer)
   {
-    return fread(buffer.data(), sizeof(char), buffer.size(), file);
+    return read(file, buffer.data(), buffer.size());
   }
 
-  size_t writeFile(FileHandle file, const ByteVector &buffer)
+  ssize_t writeFile(FileHandle file, const ByteVector &buffer)
   {
-    return fwrite(buffer.data(), sizeof(char), buffer.size(), file);
+    return write(file, buffer.data(), buffer.size());
   }
 
 #endif  // _WIN32
@@ -360,7 +375,7 @@ bool FileStream::isOpen() const
   return (d->file != InvalidFileHandle);
 }
 
-void FileStream::seek(long offset, Position p)
+void FileStream::seek(long long offset, Position p)
 {
   if(!isOpen()) {
     debug("FileStream::seek() -- invalid file.");
@@ -399,7 +414,7 @@ void FileStream::seek(long offset, Position p)
     return;
   }
 
-  fseek(d->file, offset, whence);
+  lseek(d->file, offset, whence);
 
 #endif
 }
@@ -412,12 +427,12 @@ void FileStream::clear()
 
 #else
 
-  clearerr(d->file);
+  // Also NOP?
 
 #endif
 }
 
-long FileStream::tell() const
+long long FileStream::tell() const
 {
 #ifdef _WIN32
 
@@ -435,12 +450,12 @@ long FileStream::tell() const
 
 #else
 
-  return ftell(d->file);
+  return lseek(d->file, 0, SEEK_CUR);
 
 #endif
 }
 
-long FileStream::length()
+long long FileStream::length()
 {
   if(!isOpen()) {
     debug("FileStream::length() -- invalid file.");
@@ -461,10 +476,10 @@ long FileStream::length()
 
 #else
 
-  const long curpos = tell();
+  const long long curpos = tell();
 
   seek(0, End);
-  const long endpos = tell();
+  const long long endpos = tell();
 
   seek(curpos, Beginning);
 
@@ -493,7 +508,7 @@ void FileStream::truncate(long length)
 
 #else
 
-  const int error = ftruncate(fileno(d->file), length);
+  const int error = ftruncate(d->file, length);
   if(error != 0)
     debug("FileStream::truncate() -- Coundn't truncate the file.");
 

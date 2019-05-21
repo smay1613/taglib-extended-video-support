@@ -9,14 +9,14 @@ namespace TagLib {
     class EBMLReader
     {
     public:
-      EBMLReader(File *_file, ulong position);
-      EBMLReader(const EBMLReader &parent, ulong position, uint id = 0, ulong size = 0);
+      EBMLReader(File *_file, long long position);
+      EBMLReader(const EBMLReader &parent, long long position, uint id = 0, long long size = 0);
 
       MatroskaID id() const;
-      ulong size() const;
-      ulong getDataSize() const;
-      ulong getDataOffset() const;
-      ulong getOffset() const;
+      long long size() const;
+      long long getDataSize() const;
+      long long getDataOffset() const;
+      long long getOffset() const;
       const EBMLReader *getParent() const;
 
       bool isValid() const;
@@ -31,11 +31,11 @@ namespace TagLib {
       File* file;
       const EBMLReader *parent;
 
-      ulong offset;
+      long long offset;
       uint ebmlId;
 
-      ulong dataOffset;
-      ulong dataSize;
+      long long dataOffset;
+      long long dataSize;
 
       bool isSuccessRead;
 

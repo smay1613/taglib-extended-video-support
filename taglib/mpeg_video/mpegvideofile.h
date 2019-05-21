@@ -94,15 +94,15 @@ namespace TagLib {
       void readStart();
       void readEnd();
 
-      void findMarker(long &position, Marker marker);
-      Marker findMarker(long &position);
-      void rfindMarker(long &position, Marker marker);
+      void findMarker(long long &position, Marker marker);
+      Marker findMarker(long long &position);
+      void rfindMarker(long long &position, Marker marker);
 
-      Marker getMarker(long &position);
-      void readSystemFile(long position);
-      void readSystemSyncPacket(long &position);
-      double readTimeStamp(long position);
-      void readVideoHeader(long &position);
+      Marker getMarker(long long &position);
+      void readSystemFile(long long position);
+      void readSystemSyncPacket(long long &position);
+      double readTimeStamp(long long position);
+      void readVideoHeader(long long &position);
 
       class FilePrivate;
       FilePrivate *d;
