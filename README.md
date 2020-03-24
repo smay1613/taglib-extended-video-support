@@ -25,14 +25,8 @@ licenses if you are considering using TagLib in your project.
   [Mozilla Public License]: http://www.mozilla.org/MPL/MPL-1.1.html
 
 
-### Clarion info
-
+** Modification **
 TagLib was modified for handling video properties and tags.
-AV processing component uses taglib for metadata extraction, but it works only for audio,
-so the final solution was to modify the taglib sources
-(and not use slow gstreamer or another metadata extraction library for consistency).
-Also, this repository follows the taglib codestyle, but it doesn't implement all features, only that are
-needed by Clarion components.
 Please note, many things was derived from taglib-csharp implementation (https://github.com/mono/taglib-sharp), so
 in case of any issues, please check changes in that repo.
 Implemented formats: mp4 video, avi, mkv, mpeg-1, mpeg-2, wmv.
